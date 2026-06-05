@@ -1,0 +1,53 @@
+\begin{center}
+    \Large\textbf{DAFTAR SIMBOL}
+\end{center}
+
+\renewcommand{\arraystretch}{1.2}
+
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+
+\begin{longtable}{p{2.8cm} p{10.8cm}}
+
+\textbf{Simbol} & \textbf{Keterangan} \\ \hline
+
+\multicolumn{2}{l}{\bfseries Simbol Data dan Rolling Window} \\ \hline
+$y_t$ & Nilai observasi deret waktu pada waktu ke-$t$ \\
+$W_t$ & Himpunan observasi deret waktu pada rolling window ke-$t$ \\
+$L$ & Panjang rolling window \\
+$T$ & Jumlah total observasi deret waktu \\
+
+\multicolumn{2}{l}{\bfseries Simbol Kompleksitas dan Ruang Parameter} \\ \hline
+$c_t$ & Indeks kompleksitas data pada rolling window ke-$t$ yang dihasilkan melalui mekanisme Model Complexity Assessment (MCA) \\
+$\tau_1,\tau_2$ & Threshold klasifikasi kompleksitas data pada mekanisme MCA \\
+$\Omega$ & Ruang parameter global model \\
+$\Theta_t$ & Ruang parameter adaptif yang digunakan dalam proses optimasi pada rolling window ke-$t$ \\
+$\Theta_{t+1}$ & Ruang parameter adaptif pada window berikutnya yang diperbarui berdasarkan informasi diagnostik residual $\mathcal{D}(e_t)$ \\
+$g(\cdot)$ & Mekanisme pembaruan ruang parameter adaptif berbasis diagnostik residual \\
+MCA & Model Complexity Assessment \\
+
+\multicolumn{2}{l}{\bfseries Simbol Optimasi dan Parameter Model} \\ \hline
+$\theta$ & Vektor parameter model \\
+$\theta_t^*$ & Parameter optimal model pada rolling window ke-$t$ \\
+$\mathcal{F}$ & Operator recursive adaptive optimization untuk evolusi parameter model \\
+$L_t(\theta)$ & Fungsi loss yang mengukur kesalahan prediksi model pada rolling window ke-$t$ \\
+$f_t(\theta)$ & Fungsi objektif optimasi dengan komponen penalti constraint model \\
+$\lambda$ & Koefisien penalti pada fungsi objektif \\
+$\phi_i$ & Koefisien autoregressive orde ke-$i$ \\
+$\psi_i$ & Koefisien moving average orde ke-$i$ \\
+$\sigma^2$ & Variansi residual model \\
+$p,d,q$ & Orde model ARIMA \\
+
+\multicolumn{2}{l}{\bfseries Simbol Residual dan Diagnostik} \\ \hline
+$e_t$ & Residual model pada waktu ke-$t$ \\
+$\mathcal{D}(e_t)$ & Informasi diagnostik residual yang mencakup autokorelasi, heteroskedastisitas, skewness, dan kurtosis residual \\
+$\hat{\rho}_k$ & Koefisien autokorelasi residual pada lag ke-$k$ \\
+$Q$ & Statistik uji Ljung--Box \\
+
+\multicolumn{2}{l}{\bfseries Simbol Evaluasi Model} \\ \hline
+RMSE & Root Mean Squared Error sebagai ukuran rata-rata kuadrat error prediksi \\
+MAE & Mean Absolute Error sebagai ukuran rata-rata absolut error prediksi \\
+MAPE & Mean Absolute Percentage Error sebagai ukuran persentase error prediksi \\
+$R^2$ & Koefisien determinasi \\
+
+\end{longtable}
