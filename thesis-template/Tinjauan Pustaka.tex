@@ -1,0 +1,190 @@
+\section{Model Autoregressive Integrated Moving Average (ARIMA)}
+
+\noindent Autoregressive Integrated Moving Average (ARIMA) merupakan model linier stokastik yang digunakan dalam peramalan deret waktu. Model ini diperkenalkan oleh Box dan Jenkins melalui pendekatan sistematis yang meliputi tahap identifikasi, estimasi, dan diagnostik, serta didasarkan pada prinsip \textit{parsimony}, yaitu pemilihan model paling sederhana yang tetap mampu merepresentasikan struktur data secara memadai. Melalui proses \textit{differencing}, ARIMA memungkinkan transformasi data non-stasioner menjadi stasioner sehingga dapat dimodelkan secara lebih stabil (Althobaiti, 2025).
+
+Secara umum, model ARIMA dinotasikan sebagai ARIMA$(p,d,q)$, dengan $p$ menyatakan orde autoregressive (AR), $d$ tingkat \textit{differencing}, dan $q$ orde moving average (MA). Model ini merepresentasikan pola linier dalam data sebagai kombinasi nilai masa lalu dan error residual (Hyndman dan Athanasopoulos, 2021).
+
+Secara matematis, model ARIMA$(p,d,q)$ dapat dinyatakan dalam bentuk operator \textit{backshift }sebagai berikut:
+\begin{equation}
+    \phi(B)(1 - B)^d y_t = \psi(B)\varepsilon_t
+    \label{eq:arima_general}
+\end{equation}
+
+\noindent dengan:
+\begin{itemize}
+    \item $B$ adalah operator backshift, yaitu $B y_t = y_{t-1}$
+    \item $\phi(B) = 1 - \phi_1 B - \cdots - \phi_p B^p$ merupakan polinomial autoregressive
+    \item $\psi(B) = 1 + \psi_1 B + \cdots + \psi_q B^q$ merupakan polinomial moving average
+    \item $\varepsilon_t$ adalah white noise dengan $\varepsilon_t \sim \mathcal{N}(0, \sigma^2)$
+\end{itemize}
+
+Operator \textit{differencing} $(1 - B)^d$ digunakan untuk mengubah data non-stasioner menjadi stasioner. Untuk $d=1$, \textit{differencing} orde pertama dinyatakan sebagai:
+\begin{equation}
+    (1 - B)y_t = y_t - y_{t-1}
+    \label{eq:first_diff}
+\end{equation}
+
+\noindent Setelah proses \textit{differencing}, model ARIMA dapat dituliskan dalam bentuk eksplisit sebagai:
+\begin{equation}
+    y_t = \sum_{i=1}^{p} \phi_i y_{t-i} + \varepsilon_t + \sum_{j=1}^{q} \psi_j \varepsilon_{t-j}
+    \label{eq:arima_explicit}
+\end{equation}
+
+Keunggulan utama ARIMA terletak pada kesederhanaan struktur matematis dan interpretabilitas parameternya, sehingga sering digunakan sebagai model \textit{baseline} dalam peramalan deret waktu (Kontopoulou et al., 2023). Dalam penelitian ini, ARIMA digunakan sebagai pembanding untuk mengevaluasi peningkatan kinerja model yang diusulkan.
+
+Namun, kinerja ARIMA sangat bergantung pada pemilihan parameter $(p,d,q)$ yang tepat serta pemenuhan asumsi stasioneritas dan independensi residual. Penentuan parameter yang tidak optimal dapat menurunkan akurasi prediksi, terutama pada data dengan pola yang kompleks (Shumway dan Stoffer, 2017).
+
+
+\section{Metaheuristik sebagai Pendekatan Optimasi Global}
+
+\noindent Metaheuristik merupakan pendekatan optimasi global yang dirancang untuk menyelesaikan permasalahan kompleks dengan ruang solusi yang luas, tidak linier, dan sering kali bersifat non-konveks. Pendekatan ini umumnya terinspirasi oleh fenomena alam, seperti perilaku kolektif makhluk hidup atau prinsip-prinsip fisika, yang dimanfaatkan untuk melakukan pencarian solusi secara efisien (Gkonis et al., 2026).
+
+Berbeda dengan metode optimasi deterministik, algoritma metaheuristik tidak memerlukan informasi turunan maupun asumsi matematis yang ketat terhadap fungsi objektif. Hal ini menjadikan metaheuristik lebih fleksibel dalam menangani permasalahan optimasi yang memiliki banyak solusi lokal, sehingga berpotensi menemukan solusi global atau mendekati optimal.
+
+
+Secara umum, permasalahan optimasi parameter dalam konteks ini dapat dinyatakan sebagai:
+\begin{equation}
+    \theta_t^* = \arg \min_{\theta \in \Omega} \mathcal{L}_t(\theta)
+    \label{eq: optimasi_param}
+\end{equation}
+
+
+di mana $\mathcal{L}_t(\theta)$ merepresentasikan fungsi loss pada rolling window $W_t$, sedangkan $\theta_t^*$ adalah parameter optimal yang diperoleh pada window ke-$t$. Formulasi ini menunjukkan bahwa proses optimasi parameter bersifat dinamis dan bergantung pada karakteristik data pada setiap window observasi.
+
+Ruang parameter $\Omega$ merepresentasikan himpunan semua nilai parameter yang memenuhi kondisi validitas model. Dalam konteks ARIMA, $\Omega$ mencakup parameter orde $(p,d,q)$ serta parameter koefisien autoregressive dan moving average, yang dibatasi oleh kondisi stasioneritas dan invertibilitas.
+
+Fungsi $\mathcal{L}_t(\theta)$ pada Persamaan \eqref{eq: optimasi_param} merepresentasikan fungsi \textit{loss} atau fungsi objektif yang digunakan untuk mengukur tingkat kesalahan prediksi model terhadap data aktual pada window $W_t$. Secara umum, fungsi loss berperan sebagai kriteria evaluasi yang menentukan seberapa baik suatu parameter $\theta$ dalam merepresentasikan pola data.
+
+Dalam konteks peramalan deret waktu, fungsi loss umumnya didefinisikan berdasarkan selisih antara nilai aktual $y_t$ dan nilai prediksi $\hat{y}_t(\theta)$ yang dihasilkan oleh model. Salah satu bentuk fungsi loss yang umum digunakan adalah Mean Squared Error (MSE), yang dirumuskan sebagai:
+\begin{equation}
+\mathcal{L}_t(\theta) = \frac{1}{n} \sum_{i=1}^{n} \left(y_i - \hat{y}_i(\theta)\right)^2
+\label{eq:fungsi loss}
+\end{equation}
+
+\noindent dengan $n$ adalah jumlah observasi dalam window $W_t$. Fungsi ini mengukur rata-rata kuadrat kesalahan prediksi, sehingga memberikan penalti yang lebih besar terhadap kesalahan yang ekstrem.
+
+
+\noindent Secara matematis, ruang parameter dapat dinyatakan sebagai:
+\begin{equation}
+    \Omega  = \{ \boldsymbol{\theta} \mid \boldsymbol{\theta} \text{ memenuhi kondisi stasioneritas dan invertibilitas} \}
+\end{equation}
+
+Pembatasan ini memastikan bahwa setiap kandidat solusi yang dievaluasi dalam proses optimasi menghasilkan model yang stabil dan valid secara statistik.
+
+Dalam kerangka adaptif \textit{optimization}, proses optimasi tidak dilakukan pada seluruh ruang parameter global $\Omega$, melainkan pada ruang parameter adaptif $\Theta_t \subseteq \Omega$ yang ditentukan secara dinamis berdasarkan hasil Model Complexity Assessment (MCA).
+\begin{equation}
+    \Theta_t =
+    \begin{cases}
+    \Theta_{\text{basic}}, & c_t < \delta \\
+    \Theta_{\text{extended}}, & c_t \geq \delta
+    \end{cases}
+    \label{eq: MCA}
+\end{equation}
+
+dengan $\delta$ adalah nilai ambang kompleksitas yang digunakan untuk menentukan pemilihan ruang parameter adaptif berdasarkan skor kompleksitas data $c_t$.
+
+\section{Genetic Algorithm dalam Optimasi Parameter ARIMA}
+
+\noindent Genetic Algoritm (GA) merupakan salah satu metode metaheuristik berbasis evolusi yang meniru mekanisme seleksi alam dalam mencari solusi optimal melalui proses seleksi, crossover, dan mutasi secara iteratif (Ecer et al., 2020). GA bekerja dengan mempertahankan sekumpulan solusi kandidat yang disebut populasi, di mana setiap individu merepresentasikan kandidat solusi dalam ruang pencarian. Dalam konteks optimasi parameter ARIMA, setiap individu pada GA merepresentasikan vektor parameter $\theta = (p,d,q)$ yang mendefinisikan orde model ARIMA.
+
+
+Misalkan $P^{(g)}$ menyatakan populasi pada generasi ke-$g$, maka evolusi populasi dapat dituliskan sebagai:
+\begin{equation}
+    P^{(g+1)} = G(P^{(g)})
+\end{equation}
+di mana $g$ menyatakan indeks generasi dalam proses evolusi GA.
+
+Tahap pertama adalah seleksi, yaitu proses pemilihan individu berdasarkan nilai fitness untuk membentuk populasi terpilih $P'^{(g)}$:
+\begin{equation}
+    P'^{(g)} = S(P^{(g)})
+\end{equation}
+
+Nilai fitness setiap individu dihitung berdasarkan fungsi loss $\mathcal{L}_t(\theta)$, yang dievaluasi pada rolling window $W_t$. Dengan demikian, kualitas setiap kandidat solusi ditentukan oleh kemampuan model ARIMA dalam meminimalkan kesalahan prediksi pada data observasi dalam window ke-$t$.
+
+Selanjutnya, operator crossover digunakan untuk merekombinasi dua individu terpilih guna menghasilkan \textit{offspring}:
+\begin{equation}
+    C(P'^{(g)}) = \{ \text{crossover}(x,y) \mid x,y \in P'^{(g)} \}
+\end{equation}
+
+\noindent Dalam Genetic Algorithm, \textit{offspring} merupakan individu baru yang dihasilkan melalui proses rekombinasi dua individu induk (\textit{parent}) menggunakan operator crossover.
+\textit{convergence}:
+\begin{equation}
+    P^{(g+1)} = M(C(P'^{(g)}))
+\end{equation}
+
+Melalui mekanisme tersebut, GA memiliki kemampuan eksplorasi global yang kuat dalam menjelajahi ruang solusi yang bersifat diskrit dan kompleks.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Ilustrasi Genetic Algorithm.png}
+    \caption{Ilustrasi Genetic Algorithm}
+    \label{fig:Ilustrasi Genetic Algorithm}
+\end{figure}
+
+Gambar \ref{fig:Ilustrasi Genetic Algorithm} menunjukkan mekanisme dasar Genetic Algorithm (GA) yang digunakan sebagai tahap eksplorasi global dalam kerangka adaptif \textit{continuous optimization}. Pada penelitian ini, proses evolusi populasi dilakukan secara berulang pada setiap rolling window dengan mempertimbangkan ruang parameter adaptif $\Theta_t$. Proses dimulai dengan pembangkitan populasi awal yang terdiri atas sejumlah individu atau kromosom yang merepresentasikan kandidat solusi dalam ruang pencarian.
+
+
+\section{Particle Swarm Optimization dan Dinamika Konvergensi}
+
+\noindent Particle Swarm Optimization (PSO) merupakan algoritma metaheuristik berbasis swarm intelligence yang meniru perilaku kolektif makhluk sosial, seperti kawanan burung atau ikan, dalam mencari sumber makanan (Hasan et al., 2025). Dalam PSO, setiap solusi kandidat direpresentasikan sebagai partikel yang bergerak dalam ruang pencarian berdasarkan pengalaman terbaik individu dan informasi terbaik dari seluruh populasi.
+
+Secara matematis, setiap partikel ke-$i$ direpresentasikan oleh posisi $x_i^k \in \mathbb{R}^d$ dan kecepatan $v_k^k \in \mathbb{R}^d$ pada iterasi ke-$t$, di mana $d$ adalah dimensi ruang pencarian. Dalam konteks optimasi parameter ARIMA, dimensi ini merepresentasikan parameter model $(p, d, q)$.
+
+Pergerakan partikel dalam PSO ditentukan oleh Persamaan pembaruan kecepatan dan posisi sebagai berikut:
+\begin{equation}
+    v_i^{k+1} = w v_i^k + c_1 r_1 (pBest_i^k - x_i^k) + c_2 r_2 (gBest^k - x_i^k)
+    \label{eq: kecepatan}
+\end{equation}
+\begin{equation}
+    x_i^{k+1} = x_i^k + v_i^{k+1}
+    \label{eq: posisi}
+\end{equation}
+
+di mana $w$ merupakan \textit{inertia weight} (bobot inertia) yang mengontrol sejauh mana kecepatan partikel pada iterasi sebelumnya dipertahankan pada iterasi saat ini. \textit{Inertia weight} berperan sebagai faktor "memori" yang menentukan kecenderungan partikel untuk melanjutkan arah pergerakannya. Nilai $w$ yang besar menyebabkan partikel bergerak lebih besar dan menjelajahi ruang secara luas (eksplorasi global), sedangkan nilai $w$ kecil membuat pergerakan partikel lebih terfokus di sekitar solusi terbaik yang telah ditemukan (eksploitasi lokal).
+
+
+Selanjutnya, $c_1$ dan $c_2$ adalah koefisien akselerasi yang merepresentasikan komponen kognitif dan sosial, serta $r_1, r_2 \sim U(0,1)$ adalah variabel acak untuk menjaga keberagaman eksplorasi. Variabel $pBest_i^t$ menyatakan posisi terbaik yang pernah dicapai oleh partikel ke-$i$, sedangkan $gBest^t$ merupakan solusi terbaik yang ditemukan oleh seluruh swarm.
+
+Secara umum, nilai \textit{inertia weight} yang lebih besar mendorong eksplorasi global, sedangkan nilai yang lebih kecil meningkatkan eksploitasi lokal. Dalam kondisi $w < 1$, kecepatan partikel akan mengalami redaman (velocity damping) sehingga:
+
+\begin{equation}
+    E[||v_i^{(k)}||] \to 0
+\end{equation}
+
+PSO dikenal memiliki kecepatan konvergensi yang tinggi dan efisien dalam melakukan eksploitasi lokal. 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{Ilustrasi Particle Swarm Optimization.png}
+    \caption{Ilustrasi Particle Swarm Optimization}
+    \label{fig:Ilustrasi Particle Swarm Optimization}
+\end{figure}
+
+Gambar \ref{fig:Ilustrasi Particle Swarm Optimization} menunjukkan mekanisme pergerakan partikel dalam Particle Swarm Optimization (PSO). Secara umum, Particle Swarm Optimization memiliki kemampuan
+eksploitasi lokal yang baik dan konvergensi yang relatif cepat
+dalam menemukan solusi optimal. Namun demikian, pada ruang solusi
+yang kompleks dan multimodal, PSO memiliki kecenderungan mengalami
+premature convergence akibat berkurangnya keberagaman partikel
+selama proses iterasi.
+
+\section{Metrik Evaluasi Kinerja Model Peramalan}
+
+\noindent Dalam evaluasi kinerja model peramalan deret waktu, berbagai metrik kesalahan digunakan untuk mengukur deviasi antara nilai aktual dan nilai hasil prediksi. Beberapa metrik yang paling umum digunakan dalam literatur adalah Root Mean Squared Error (RMSE), Mean Absolute Error (MAE), dan Mean Absolute Percentage Error (MAPE) (Nhlapho et al., 2025).
+
+Root Mean Squared Error (RMSE) digunakan untuk mengukur besarnya kesalahan prediksi dengan memberikan penalti yang lebih besar terhadap kesalahan yang ekstrem. Metrik ini dirumuskan sebagai:
+\begin{equation}
+    RMSE = \sqrt{\frac{1}{N} \sum_{t=1}^{N} (Y_t - \hat{Y}_t)^2}
+\end{equation}
+di mana $Y_t$ merupakan nilai aktual pada waktu ke-$t$, $\hat{Y}_t$ adalah nilai prediksi, dan $N$ adalah jumlah observasi.
+
+Mean Absolute Error (MAE) digunakan untuk mengukur rata-rata kesalahan absolut tanpa memberikan bobot tambahan pada kesalahan ekstrem, sehingga memberikan gambaran umum mengenai tingkat deviasi prediksi. MAE dirumuskan sebagai:
+\begin{equation}
+    MAE = \frac{1}{N} \sum_{t=1}^{N} |Y_t - \hat{Y}_t|
+\end{equation}
+
+Sementara itu, Mean Absolute Percentage Error (MAPE) digunakan untuk mengukur kesalahan prediksi dalam bentuk persentase, sehingga memudahkan interpretasi secara relatif terhadap nilai aktual. MAPE dirumuskan sebagai:
+\begin{equation}
+    MAPE = \frac{100\%}{N} \sum_{t=1}^{N} \left| \frac{Y_t - \hat{Y}_t}{Y_t} \right|
+\end{equation}
+
+\pagebreak
